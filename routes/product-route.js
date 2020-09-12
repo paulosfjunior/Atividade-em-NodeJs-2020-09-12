@@ -7,9 +7,9 @@ const Produto = require('../app/models/product');
 const Categoria = require('../app/models/category');
 const { route } = require('./index-router');
 
-router.post('/', function (req, res) {
+router.post('/', async function (req, res) {
   const idCategoria = mongoose.Types.ObjectId(req.body.idCategoria)
-  const categoria = Categoria.findById(idCategoria, (err, categoria) => categoria)
+  const categoria = await Categoria.findById(idCategoria, (err, categoria) => categoria)
 
   if (categoria) {
     const produto = new Produto();
@@ -64,7 +64,7 @@ router.get('/:productId', function (req, res) {
 router.put('/:productId', function (req, res) {
   const id = req.params.productId;
   console.log(id);
-  Produto.findById(id, function (err, produto) {
+  Produto.findById(id, async function (err, produto) {
     if (err) {
       res.status(500).json({
         message: "Erro ao tentar econtrar produto, id mal formado"
@@ -75,7 +75,7 @@ router.put('/:productId', function (req, res) {
       });
     } else {
       const idCategoria = mongoose.Types.ObjectId(req.body.idCategoria)
-      const categoria = Categoria.findById(idCategoria, (err, categoria) => categoria)
+      const categoria = await Categoria.findById(idCategoria, (err, categoria) => categoria)
 
       produto.nome = req.body.name;
       produto.preco = req.body.preco;
