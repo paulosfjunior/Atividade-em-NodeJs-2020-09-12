@@ -8,9 +8,9 @@ exports.post = function (req, res) {
 
   cliente.save(function (error) {
     if (error)
-      res.send(`Erro ao tentar salvar uma novo cliente ${error}`);
+      res.send(`Erro ao tentar salvar um novo cliente ${error}`);
 
-    res.status(201).json({ message: 'cliente inserida com sucesso' });
+    res.status(201).json({ message: 'cliente inserido com sucesso' });
   });
 }
 
@@ -20,7 +20,7 @@ exports.get = function (req, res) {
       res.send(err);
 
     res.status(200).json({
-      message: 'retorno ok de todas os clientes',
+      message: 'retorno ok de todos os clientes',
       allCustomers: cust
     });
   });

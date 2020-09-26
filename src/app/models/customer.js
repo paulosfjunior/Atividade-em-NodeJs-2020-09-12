@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const customerSchema = new Schema({
-  nome: String,
-  email: String,
-  senha: String
+  nome: {type: String, required: true},
+  email: {type: String, required: true},
+  senha: {type: String, required: true}
 });
 
 module.exports = mongoose.model('Cliente', customerSchema);
