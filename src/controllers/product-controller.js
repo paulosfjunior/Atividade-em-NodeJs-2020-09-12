@@ -116,3 +116,16 @@ exports.delete = async function (req, res) {
     })
   });
 }
+
+exports.count = async function (req, res) {
+  await repository.get()
+  .then((resultado) => {
+    res.status(200).send({
+      message: `Existem ${resultado.length} produto(s) cadastrado(s).`
+    });
+  }).catch((error) => {
+    res.status(500).send({
+      message:`Falha ao processar a requisição: ${error}`
+    });
+  });
+}
