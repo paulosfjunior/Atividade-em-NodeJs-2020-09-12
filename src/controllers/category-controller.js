@@ -1,86 +1,92 @@
-const Categoria = require('../app/models/category');
+const repository = require('../repositories/category-repository');
 
-exports.post = function (req, res) {
-  const categoria = new Categoria();
-  categoria.descricao = req.body.descricao;
-
-  categoria.save(function (error) {
-    if (error)
-      res.send(`Erro ao tentar salvar uma nova categoria ${error}`);
-
-    res.status(201).json({ message: 'categoria inserida com sucesso' });
+exports.post = async function (req, res) {
+  await repository.post({
+    descricao: req.body.descricao
+  }).then(() => {
+    res.status(201).send({
+      message: 'Categoria cadastrada com sucesso!'
+    });
+  }).catch((error) => {
+    res.status(500).send({
+        message:`Falha ao processar a requisição: ${error}`
+    })
   });
 }
 
-exports.get = function (req, res) {
-  Categoria.find(function (err, prods) {
-    if (err)
-      res.send(err);
-
-    res.status(200).json({
-      message: 'retorno ok de todas as categorias',
-      allProducts: prods
+exports.get = async function (req, res) {
+  await repository.get()
+  .then((resultado) => {
+    if (resultado) {
+      res.status(200).send({
+        message: resultado
+      });
+    } else {
+      res.status(200).send({
+        message: 'Nenhuma categoria cadastrada.'
+      })
+    }
+  }).catch((error) => {
+    res.status(500).send({
+      message:`Falha ao processar a requisição: ${error}`
     });
   });
 }
 
-exports.getId = function (req, res) {
+exports.getId = async function (req, res) {
   const id = req.params.categoryId;
 
-  Categoria.findById(id, function (err, categoria) {
-    if (err) {
-      res.status(500).json({
-        message: 'Erro ao tentar encontrar categoria; ID mal formato',
-      });
-    } else if (categoria == null) {
-      res.status(400).json({
-        message: 'Categoria não econtrada para o Id passado'
+  await repository.getId({
+    _id: id
+  }).then((resultado) => {
+    if (resultado) {
+      res.status(200).send({
+        message: resultado
       });
     } else {
-      res.status(200).json({
-        message: 'Categoria encontrada',
-        categoria: categoria
-      });
+      res.status(200).send({
+        message: 'Nenhuma categoria cadastrada com esse ID.'
+      })
     }
+  }).catch((error) => {
+    res.status(500).send({
+      message:`Falha ao processar a requisição: ${error}`
+    });
   });
 }
 
-exports.put = function (req, res) {
+exports.put = async function (req, res) {
   const id = req.params.categoryId;
-
-  Categoria.findById(id, function (err, categoria) {
-    if (err) {
-      res.status(500).json({
-        message: 'Erro ao tentar econtrar categoria, id mal formado'
-      });
-    } else if (categoria == null) {
-      res.status(400).json({
-        message: 'Categoria nao econtrada para o id passado'
-      });
-    } else {
-      categoria.descricao = req.body.descricao;
-
-      categoria.save(function (error) {
-        if (error)
-        res.send(`Erro ao tentar salvar uma nova categoria ${error}`);
-
-        res.status(200).json({
-          message: 'categoria atualizada com sucesso'
-        });
-      });
+  await repository.put(
+    {
+      _id: id
+    },
+    {
+      descricao: req.body.descricao
     }
+  ).then(() => {
+    res.status(201).send({
+      message: 'Categoria alterada com sucesso!'
+    });
+  }).catch((error) => {
+    res.status(500).send({
+        message:`Falha ao processar a requisição: ${error}`
+    })
   });
 }
 
-exports.delete = function (req, res) {
-  Categoria.findByIdAndRemove(req.params.categoryId, (err, categoria) => {
-    if (err)
-      res.status(500).send(`Erro ao deletar ${err}`)
+exports.delete = async function (req, res) {
+  const id = req.params.categoryId;
 
-    const response = {
-      message: 'Categoria removida com sucesso',
-      id: categoria.id
-    };
-    return res.status(200).send(response);
+  await repository.delete({
+    _id: id
+  }).then(() => {
+    res.status(201).send({
+      message: 'Categoria removida com sucesso!'
+    });
+  }).catch((error) => {
+    res.status(500).send({
+        message:`Falha ao processar a requisição: ${error}`
+    })
   });
 }
