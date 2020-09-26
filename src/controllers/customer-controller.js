@@ -1,90 +1,96 @@
-const Cliente = require('../app/models/customer');
+const repository = require('../repositories/customer-repository');
 
-exports.post = function (req, res) {
-  const cliente = new Cliente();
-  cliente.nome = req.body.nome;
-  cliente.email = req.body.email;
-  cliente.senha = req.body.senha;
-
-  cliente.save(function (error) {
-    if (error)
-      res.send(`Erro ao tentar salvar um novo cliente ${error}`);
-
-    res.status(201).json({ message: 'cliente inserido com sucesso' });
+exports.post = async function (req, res) {
+  await repository.post({
+    nome: req.body.nome,
+    email: req.body.email,
+    senha: req.body.senha
+  }).then(() => {
+    res.status(201).send({
+      message: 'Usuario cadastrado com sucesso!'
+    });
+  }).catch((error) => {
+    res.status(500).send({
+        message:`Falha ao processar a requisição: ${error}`
+    })
   });
 }
 
-exports.get = function (req, res) {
-  Cliente.find(function (err, cust) {
-    if (err)
-      res.send(err);
-
-    res.status(200).json({
-      message: 'retorno ok de todos os clientes',
-      allCustomers: cust
+exports.get = async function (req, res) {
+  await repository.get()
+  .then((resultado) => {
+    if (resultado) {
+      res.status(200).send({
+        message: resultado
+      });
+    } else {
+      res.status(200).send({
+        message: 'Nenhum usuario cadastrado.'
+      })
+    }
+  }).catch((error) => {
+    res.status(500).send({
+      message:`Falha ao processar a requisição: ${error}`
     });
   });
 }
 
-exports.getId = function (req, res) {
+exports.getId = async function (req, res) {
   const id = req.params.customerId;
 
-  Cliente.findById(id, function (err, cliente) {
-    if (err) {
-      res.status(500).json({
-        message: 'Erro ao tentar encontrar cliente; ID mal formato',
-      });
-    } else if (cliente == null) {
-      res.status(400).json({
-        message: 'Cliente não econtrado para o Id passado'
+  await repository.getId({
+    _id: id
+  }).then((resultado) => {
+    if (resultado) {
+      res.status(200).send({
+        message: resultado
       });
     } else {
-      res.status(200).json({
-        message: 'Cliente encontrado',
-        cliente: cliente
-      });
+      res.status(200).send({
+        message: 'Nenhum usuario cadastrado com esse ID.'
+      })
     }
+  }).catch((error) => {
+    res.status(500).send({
+      message:`Falha ao processar a requisição: ${error}`
+    });
   });
 }
 
-exports.put = function (req, res) {
+exports.put = async function (req, res) {
   const id = req.params.customerId;
-
-  Cliente.findById(id, function (err, cliente) {
-    if (err) {
-      res.status(500).json({
-        message: 'Erro ao tentar econtrar cliente, id mal formado'
-      });
-    } else if (cliente == null) {
-      res.status(400).json({
-        message: 'Cliente nao econtrado para o id passado'
-      });
-    } else {
-      cliente.nome = req.body.nome;
-      cliente.email = req.body.email;
-      cliente.senha = req.body.senha;
-
-      cliente.save(function (error) {
-        if (error)
-        res.send(`Erro ao tentar salvar um novo cliente ${error}`);
-
-        res.status(200).json({
-          message: 'cliente atualizado com sucesso'
-        });
-      });
+  await repository.put(
+    {
+      _id: id
+    },
+    {
+      nome: req.body.nome,
+      email: req.body.email,
+      senha: req.body.senha
     }
+  ).then(() => {
+    res.status(201).send({
+      message: 'Usuario alterado com sucesso!'
+    });
+  }).catch((error) => {
+    res.status(500).send({
+        message:`Falha ao processar a requisição: ${error}`
+    })
   });
 }
 
-exports.delete = function (req, res) {
-  Cliente.findByIdAndRemove(req.params.customerId, (err, cliente) => {
-    if (err)
-      res.status(500).send(`Erro ao deletar ${err}`)
+exports.delete = async function (req, res) {
+  const id = req.params.customerId;
 
-    const response = {
-      message: 'Cliente removido com sucesso',
-      id: cliente.id
-    };
-    return res.status(200).send(response);
+  await repository.delete({
+    _id: id
+  }).then(() => {
+    res.status(201).send({
+      message: 'Usuario removido com sucesso!'
+    });
+  }).catch((error) => {
+    res.status(500).send({
+        message:`Falha ao processar a requisição: ${error}`
+    })
   });
 }

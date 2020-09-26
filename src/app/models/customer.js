@@ -7,4 +7,4 @@ const customerSchema = new Schema({
   senha: {type: String, required: true}
 });
 
-module.exports = mongoose.model('Cliente', customerSchema);
+module.exports = mongoose.model('Usuario', customerSchema);
