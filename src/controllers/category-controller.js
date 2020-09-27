@@ -1,10 +1,19 @@
 const repository = require('../repositories/category-repository');
+const sLog = require('../repositories/log-repository');
 
 exports.post = async function (req, res) {
-  await repository.post({
+  const dados = {
     nome: req.body.nome,
     descricao: req.body.descricao
-  }).then(() => {
+  };
+
+  await repository.post(dados)
+  .then(() => {
+    sLog.post({
+      tabela: 'categorias',
+      descricao: `Categoria cadastrada com sucesso! [${dados}]`
+    });
+
     res.status(201).send({
       message: 'Categoria cadastrada com sucesso!'
     });
@@ -18,6 +27,11 @@ exports.post = async function (req, res) {
 exports.get = async function (req, res) {
   await repository.get()
   .then((resultado) => {
+    sLog.post({
+      tabela: 'categorias',
+      descricao: `Categorias buscadas! [${resultado}]`
+    });
+
     if (resultado) {
       res.status(200).send({
         message: resultado
@@ -40,6 +54,11 @@ exports.getId = async function (req, res) {
   await repository.getId({
     _id: id
   }).then((resultado) => {
+    sLog.post({
+      tabela: 'categorias',
+      descricao: `Categoria buscada por ID ${id}! [${resultado}]`
+    });
+
     if (resultado) {
       res.status(200).send({
         message: resultado
@@ -58,15 +77,22 @@ exports.getId = async function (req, res) {
 
 exports.put = async function (req, res) {
   const id = req.params.categoryId;
+  const dados = {
+    nome: req.body.nome,
+    descricao: req.body.descricao
+  };
+
   await repository.put(
     {
       _id: id
     },
-    {
-      nome: req.body.nome,
-      descricao: req.body.descricao
-    }
+    dados
   ).then(() => {
+    sLog.post({
+      tabela: 'categorias',
+      descricao: `Categoria alterada com sucesso! ID: ${id} [${dados}]`
+    });
+
     res.status(201).send({
       message: 'Categoria alterada com sucesso!'
     });
@@ -83,6 +109,11 @@ exports.delete = async function (req, res) {
   await repository.delete({
     _id: id
   }).then(() => {
+    sLog.post({
+      tabela: 'categorias',
+      descricao: `Categoria removida com sucesso! [${id}]`
+    });
+
     res.status(201).send({
       message: 'Categoria removida com sucesso!'
     });
