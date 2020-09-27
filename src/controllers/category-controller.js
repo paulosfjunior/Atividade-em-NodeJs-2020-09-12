@@ -2,6 +2,7 @@ const repository = require('../repositories/category-repository');
 
 exports.post = async function (req, res) {
   await repository.post({
+    nome: req.body.nome,
     descricao: req.body.descricao
   }).then(() => {
     res.status(201).send({
@@ -62,6 +63,7 @@ exports.put = async function (req, res) {
       _id: id
     },
     {
+      nome: req.body.nome,
       descricao: req.body.descricao
     }
   ).then(() => {
