@@ -1,0 +1,1 @@
+global.SALT_KEY = '068d85a8-1715-478a-b9f6-f6d219c13914';

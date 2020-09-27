@@ -94,3 +94,19 @@ exports.delete = async function (req, res) {
     })
   });
 }
+
+exports.register = async (req, res) => {
+  await repository.register({
+    nome: req.body.nome,
+    email: req.body.email,
+    senha: req.body.senha
+  }).then(() => {
+    res.status(201).send({
+      message: 'Usuario cadastrado com sucesso!'
+    });
+  }).catch((error) => {
+    res.status(500).send({
+        message:`Falha ao processar a requisição: ${error}`
+    })
+  });
+}

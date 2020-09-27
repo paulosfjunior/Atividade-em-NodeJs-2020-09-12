@@ -20,3 +20,21 @@ exports.put = async (id, dados) => {
 exports.delete = async (id) => {
   return await Usuario.findByIdAndRemove(id);
 }
+
+exports.register = async(dados) => {
+  const consulta = await Usuario.find({ email: dados.email });
+
+  if(consulta){
+    throw {
+      status: 400,
+      message: 'Usuario ja cadastrado.'
+    };
+  }
+
+  const usuario = new Usuario();
+  usuario.nome = nome;
+  usuario.email = email;
+  usuario.senha = usuario.gerarHash(senha);
+
+  return await usuario.save();
+}

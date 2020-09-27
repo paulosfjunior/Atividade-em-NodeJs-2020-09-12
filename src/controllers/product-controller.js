@@ -4,7 +4,7 @@ const repCategoria = require('../repositories/category-repository');
 
 exports.post = async function (req, res) {
   const idCategoria = mongoose.Types.ObjectId(req.body.idCategoria);
-  const categoria = await repCategoria.getId(idCategoria)
+  const categoria = await repCategoria.getId(idCategoria);
   
   if (categoria) {
     await repository.post({
